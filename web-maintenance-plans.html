@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Web Maintenance Plans</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --navy: #0A0F1A;
+    --navy-soft: #0D1420;
+    --blue: #2E7CF6;
+    --blue-soft: #5B9BFF;
+    --green: #16A36A;
+    --amber: #E08A2C;
+    --ink: #13182A;
+    --grey: #5B6478;
+    --grey-soft: #8A93A6;
+    --pagebg: #F3F5F9;
+    --cardbg: #FFFFFF;
+    --rule: #E4E8F0;
+    --white: #FFFFFF;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --pagebg: #0B0E14;
+      --cardbg: #131822;
+      --ink: #EDEFF4;
+      --grey: #A7AEC0;
+      --grey-soft: #7C8496;
+      --rule: #232A38;
+    }
+  }
+  :root[data-theme="dark"] {
+    --pagebg: #0B0E14;
+    --cardbg: #131822;
+    --ink: #EDEFF4;
+    --grey: #A7AEC0;
+    --grey-soft: #7C8496;
+    --rule: #232A38;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--pagebg);
+    color: var(--ink);
+    line-height: 1.55;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace; }
+  .wrap { max-width: 1500px; margin: 0 auto; padding: 2.5rem 2.5rem 5rem; }
+
+  .doc-card {
+    background: var(--cardbg);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 2.25rem;
+  }
+
+  /* Header bar */
+  .doc-headerbar { background: var(--navy); color: var(--white); padding: 22px 28px 0; }
+  .doc-headerbar-top { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .doc-headerbar-logo { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; color: var(--blue-soft); }
+  .doc-headerbar-tag { font-size: 9px; letter-spacing: 0.14em; color: #7B8499; margin-top: 4px; }
+  .doc-headerbar-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em; color: var(--blue-soft);
+    background: rgba(46,124,246,0.14); border: 1px solid rgba(46,124,246,0.35);
+    padding: 5px 12px; border-radius: 20px; white-space: nowrap;
+  }
+  .doc-headerbar-meta { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 16px 0 18px; }
+  .doc-headerbar-meta .label { font-size: 9px; letter-spacing: 0.08em; color: #7B8499; margin-bottom: 3px; }
+  .doc-headerbar-meta .value { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.92); }
+
+  /* Body */
+  .doc-body { padding: 28px; }
+  .section-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--blue); margin-bottom: 8px; }
+  .section-title { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 8px; color: var(--ink); }
+  .section-desc { font-size: 13px; color: var(--grey); max-width: 60ch; margin-bottom: 22px; }
+
+  /* Tier cards */
+  .tiers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .tier {
+    border: 1px solid var(--rule); border-radius: 10px; padding: 18px 16px; position: relative; background: var(--cardbg);
+  }
+  .tier.featured { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .tier-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .tier-price { font-size: 22px; font-weight: 800; }
+  .tier-price span { font-size: 11px; font-weight: 500; color: var(--grey-soft); }
+  .tier.featured .tier-price span { color: #9AA6C4; }
+  .tier-desc { font-size: 12px; color: var(--grey); margin-top: 8px; }
+  .tier.featured .tier-desc { color: #B9C1D9; }
+  .tier-flag {
+    position: absolute; top: 16px; right: 14px; font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--blue-soft); background: rgba(46,124,246,0.14); border: 1px solid rgba(46,124,246,0.35);
+    padding: 3px 9px; border-radius: 20px;
+  }
+
+  /* Comparison table */
+  .compare-wrap { border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+  table.compare { width: 100%; border-collapse: collapse; background: var(--cardbg); }
+  table.compare th, table.compare td { padding: 11px 16px; text-align: left; vertical-align: top; font-size: 12.5px; }
+  table.compare thead th { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--grey-soft); background: var(--pagebg); border-bottom: 1px solid var(--rule); }
+  table.compare tbody tr:not(:last-child) td, table.compare tbody tr:not(:last-child) th { border-bottom: 1px solid var(--rule); }
+  table.compare th[scope="row"] { font-weight: 600; color: var(--ink); width: 26%; min-width: 150px; }
+  table.compare td { color: var(--grey); width: 24.6%; }
+  .section-row th { padding-top: 16px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; color: var(--blue); background: var(--pagebg); }
+  .yes { color: var(--green); font-weight: 600; }
+  .dash { color: var(--grey-soft); }
+
+  .table-scroll { overflow-x: auto; }
+  .table-scroll::-webkit-scrollbar { height: 6px; }
+
+  /* Terms & conditions two-col cards */
+  .two-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .info-card { background: var(--pagebg); border: 1px solid var(--rule); border-radius: 10px; padding: 15px 17px; }
+  .info-card .clause { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--blue); margin-bottom: 7px; }
+  .info-card p { font-size: 12px; color: var(--grey); line-height: 1.6; margin: 0; }
+
+  /* Footer bar */
+  .foot-bar { display: flex; justify-content: space-between; align-items: flex-end; padding: 16px 28px; border-top: 1px solid var(--rule); background: var(--pagebg); }
+  .foot-bar-left { font-size: 10.5px; color: var(--grey-soft); }
+  .foot-bar-right { font-size: 10.5px; color: var(--grey-soft); text-align: right; line-height: 1.35; }
+
+  @media (max-width: 1180px) {
+    .two-col { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 760px) {
+    .doc-headerbar-meta { grid-template-columns: repeat(2, 1fr); }
+    .tiers { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .table-scroll { overflow-x: visible; }
+    table.compare, table.compare tbody, table.compare tr, table.compare th, table.compare td { display: block; width: 100%; }
+    table.compare thead { display: none; }
+    table.compare tbody tr { padding: 8px 16px 2px; }
+    table.compare tbody tr:not(:last-child) { border-bottom: 1px solid var(--rule); }
+    table.compare tbody tr td, table.compare tbody tr th { border: none !important; padding: 2px 0; }
+    table.compare th[scope="row"] { font-weight: 700; padding-top: 8px; }
+    table.compare td::before { content: attr(data-label); font-size: 9.5px; color: var(--grey-soft); display: inline-block; width: 6rem; }
+    .section-row { padding-top: 8px; }
+    .foot-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .foot-bar-right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- PLANS -->
+    <div class="doc-card">
+      <div class="doc-headerbar">
+        <div class="doc-headerbar-top">
+          <div>
+            <div class="doc-headerbar-logo">Algorithm</div>
+            <div class="doc-headerbar-tag mono">TURN POTENTIAL INTO PERFORMANCE</div>
+          </div>
+          <div class="doc-headerbar-badge mono">SERVICE OFFERING</div>
+        </div>
+        <div class="doc-headerbar-meta">
+          <div><div class="label mono">Service</div><div class="value">Web Maintenance &amp; Support</div></div>
+          <div><div class="label mono">Currency</div><div class="value">ZAR, excl. VAT</div></div>
+          <div><div class="label mono">Term</div><div class="value">Month-to-month</div></div>
+          <div><div class="label mono">Reference</div><div class="value">WM-2026</div></div>
+        </div>
+      </div>
+      <div class="doc-body">
+        <div class="section-label mono">WEB MAINTENANCE &amp; SUPPORT</div>
+        <h1 class="section-title">Monthly retainer plans</h1>
+        <p class="section-desc">Three tiers, each with dev hours built in for content uploads and small fixes — sized for how much a site changes and how fast it needs answers.</p>
+
+        <div class="tiers">
+          <div class="tier">
+            <div class="tier-name">Maintain</div>
+            <div class="tier-price mono">R4,500 <span>/ month</span></div>
+            <p class="tier-desc">2 hours included — for sites that mostly sit still, protected and watched rather than actively worked on.</p>
+          </div>
+          <div class="tier">
+            <span class="tier-flag mono">MOST CHOSEN</span>
+            <div class="tier-name">Grow</div>
+            <div class="tier-price mono">R8,500 <span>/ month</span></div>
+            <p class="tier-desc">4 hours included — content uploads, small fixes, and offers handled monthly without a separate quote.</p>
+          </div>
+          <div class="tier featured">
+            <div class="tier-name">Partner</div>
+            <div class="tier-price mono">R12,000 <span>/ month</span></div>
+            <p class="tier-desc">6 hours included — for sites the business depends on, with fast response and room to build.</p>
+          </div>
+        </div>
+
+        <div class="compare-wrap">
+          <div class="table-scroll">
+            <table class="compare">
+              <thead>
+                <tr><th scope="col"></th><th scope="col">Maintain</th><th scope="col">Grow</th><th scope="col">Partner</th></tr>
+              </thead>
+              <tbody>
+                <tr class="section-row"><th scope="row" colspan="4" class="mono">SECURITY &amp; INFRASTRUCTURE</th></tr>
+                <tr>
+                  <th scope="row">Core &amp; plugin updates</th>
+                  <td data-label="Maintain">Monthly</td>
+                  <td data-label="Grow">Weekly</td>
+                  <td data-label="Partner">Weekly, tested on staging first</td>
+                </tr>
+                <tr>
+                  <th scope="row">Backups</th>
+                  <td data-label="Maintain">Depends on client's host — daily if we host</td>
+                  <td data-label="Grow">Depends on client's host — daily if we host</td>
+                  <td data-label="Partner">Daily</td>
+                </tr>
+                <tr>
+                  <th scope="row">Uptime &amp; malware monitoring</th>
+                  <td data-label="Maintain" class="yes">Included</td>
+                  <td data-label="Grow" class="yes">Included</td>
+                  <td data-label="Partner" class="yes">Included, with alerting to our on-call</td>
+                </tr>
+                <tr>
+                  <th scope="row">SSL &amp; domain watch</th>
+                  <td data-label="Maintain" class="yes">Included</td>
+                  <td data-label="Grow" class="yes">Included</td>
+                  <td data-label="Partner" class="yes">Included</td>
+                </tr>
+
+                <tr class="section-row"><th scope="row" colspan="4" class="mono">CONTENT &amp; CHANGES</th></tr>
+                <tr>
+                  <th scope="row">Dev hours included</th>
+                  <td data-label="Maintain">2 hours / month</td>
+                  <td data-label="Grow">4 hours / month</td>
+                  <td data-label="Partner">6 hours / month</td>
+                </tr>
+                <tr>
+                  <th scope="row">Unused hours</th>
+                  <td data-label="Maintain" class="dash">Don't roll over</td>
+                  <td data-label="Grow" class="dash">Don't roll over</td>
+                  <td data-label="Partner" class="dash">Don't roll over</td>
+                </tr>
+
+                <tr class="section-row"><th scope="row" colspan="4" class="mono">RESPONSE &amp; REPORTING</th></tr>
+                <tr>
+                  <th scope="row">Support response time</th>
+                  <td data-label="Maintain">3 business days</td>
+                  <td data-label="Grow">1 business day</td>
+                  <td data-label="Partner">Same business day</td>
+                </tr>
+                <tr>
+                  <th scope="row">Emergency/down-site response</th>
+                  <td data-label="Maintain">Same business day</td>
+                  <td data-label="Grow">Same business day</td>
+                  <td data-label="Partner">Same business day</td>
+                </tr>
+                <tr>
+                  <th scope="row">Monthly report</th>
+                  <td data-label="Maintain">Uptime &amp; update log</td>
+                  <td data-label="Grow">Uptime, updates, hours used</td>
+                  <td data-label="Partner">Full report + performance notes</td>
+                </tr>
+                <tr>
+                  <th scope="row">Strategy check-in</th>
+                  <td data-label="Maintain" class="dash">—</td>
+                  <td data-label="Grow" class="dash">—</td>
+                  <td data-label="Partner">Quarterly call</td>
+                </tr>
+
+                <tr class="section-row"><th scope="row" colspan="4" class="mono">HOSTING</th></tr>
+                <tr>
+                  <th scope="row">Hosting</th>
+                  <td data-label="Maintain">Client's own, or ours — price confirmed per site</td>
+                  <td data-label="Grow">Client's own, or ours — price confirmed per site</td>
+                  <td data-label="Partner">Included on our infrastructure</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bar">
+        <div class="foot-bar-left mono">Web Maintenance &amp; Support &middot; Page 1 of 2</div>
+        <div class="foot-bar-right mono">Turn Potential<br>Into Performance.</div>
+      </div>
+    </div>
+
+    <!-- TERMS & CONDITIONS -->
+    <div class="doc-card">
+      <div class="doc-headerbar">
+        <div class="doc-headerbar-top">
+          <div>
+            <div class="doc-headerbar-logo">Algorithm</div>
+            <div class="doc-headerbar-tag mono">TURN POTENTIAL INTO PERFORMANCE</div>
+          </div>
+          <div class="doc-headerbar-badge mono">TERMS &amp; CONDITIONS</div>
+        </div>
+        <div class="doc-headerbar-meta">
+          <div><div class="label mono">Service</div><div class="value">Web Maintenance &amp; Support</div></div>
+          <div><div class="label mono">Currency</div><div class="value">ZAR, excl. VAT</div></div>
+          <div><div class="label mono">Term</div><div class="value">Month-to-month</div></div>
+          <div><div class="label mono">Reference</div><div class="value">WM-2026</div></div>
+        </div>
+      </div>
+      <div class="doc-body">
+        <div class="section-label mono">LEGAL</div>
+        <h1 class="section-title">Service agreement terms</h1>
+        <p class="section-desc">These terms apply to any Web Maintenance &amp; Support engagement and form part of the agreement between the client and Algorithm Agency.</p>
+
+        <div class="two-col">
+          <div class="info-card">
+            <div class="clause mono">1.1 &middot; PAYMENT &amp; BILLING</div>
+            <p>Retainer fees are billed monthly in advance and payable within 7 days of invoice date. All prices are quoted in ZAR and exclude VAT.</p>
+          </div>
+          <div class="info-card">
+            <div class="clause mono">1.2 &middot; TERM &amp; CANCELLATION</div>
+            <p>Engagements run month-to-month with no lock-in period. Either party may cancel with 30 days' written notice; no cancellation fee applies.</p>
+          </div>
+          <div class="info-card">
+            <div class="clause mono">1.3 &middot; SCOPE OF HOURS</div>
+            <p>Included hours cover content and image uploads, small fixes, and bug fixes only. Hours do not roll over between months and are billed at the standard hourly rate once exceeded.</p>
+          </div>
+          <div class="info-card">
+            <div class="clause mono">1.4 &middot; HOSTING &amp; BACKUPS</div>
+            <p>Where the client hosts the site, backup frequency depends on that host's own policy. Where Algorithm Agency hosts, backups run daily as standard, and hosting is priced per site once its type and requirements are confirmed.</p>
+          </div>
+          <div class="info-card">
+            <div class="clause mono">1.5 &middot; RESPONSE TIMES</div>
+            <p>Response times apply during business hours (Mon&ndash;Fri, 08:00&ndash;17:00 SAST). Emergency or down-site response is treated as same business day regardless of tier.</p>
+          </div>
+          <div class="info-card">
+            <div class="clause mono">1.6 &middot; TIER CHANGES</div>
+            <p>Clients may move up or down a tier at any monthly renewal date. Changes take effect from the start of the next billing cycle.</p>
+          </div>
+          <div class="info-card">
+            <div class="clause mono">1.7 &middot; RATE REVIEWS</div>
+            <p>Retainer fees and the standard hourly rate are reviewed annually. Any change is communicated at least 30 days in advance of the next billing cycle.</p>
+          </div>
+          <div class="info-card">
+            <div class="clause mono">1.8 &middot; LIMITATION OF LIABILITY</div>
+            <p>Algorithm Agency's liability under this agreement is limited to the fees paid in the preceding three months, and excludes indirect or consequential loss.</p>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bar">
+        <div class="foot-bar-left mono">Web Maintenance &amp; Support &middot; Page 2 of 2</div>
+        <div class="foot-bar-right mono">Turn Potential<br>Into Performance.</div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
